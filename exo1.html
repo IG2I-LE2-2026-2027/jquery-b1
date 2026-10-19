@@ -1,0 +1,35 @@
+<script src="jquery.js"></script>
+
+<style>
+    .allume {
+        background-color: red;
+    }
+
+    .exemple {
+        display: none;
+    }
+</style>
+
+<script>
+    function decollage() {
+        // Utiliser le sympbole $ revient à utiliser jQuery
+
+        // $("selecteur css")
+        // jQuery("selecteur css")
+        // resultat c'est une collection de référence jQuery
+
+        $(".exemple")
+            .addClass("allume")
+            .show("slow");
+    }
+</script>
+
+<body>
+    <input type="button" onclick="decollage()" value="GO" />
+    <p class="exemple"> Paragraphe 1</p>
+    <p class=""> Paragraphe 2</p>
+    <p class="exemple"> Paragraphe 3</p>
+    <div class="exemple"> Div 1</div>
+    <div class=""> Div 2</div>
+    <div class="exemple"> Div 3</div>
+</body>
