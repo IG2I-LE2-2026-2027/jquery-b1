@@ -1,0 +1,48 @@
+<script src="jquery.js"></script>
+
+<style>
+    .controle {
+        display: none;
+    }
+
+    #contenu p {
+        padding: 2px;
+    }
+
+    #contenu.modeEdition p:hover {
+        cursor: pointer;
+        border: 1px solid black;
+    }
+</style>
+
+<script>
+    function basculerMode() {
+        // Afficher/Cacher le #contenu
+        $(".controle").toggle();
+        $("#contenu").toggleClass("modeEdition");
+
+        // mettre à jour la valeur du bouton
+        if ($("#contenu").hasClass("modeEdition")) {
+            $("input[value='Passer en mode edition']").val("Quitter le mode edition");
+        } else {
+            $("input[value='Quitter le mode edition']").val("Passer en mode edition");
+        }
+    }
+</script>
+
+<body>
+    <div class="controle">Mode Edition</div>
+    <input type="button" value="Passer en mode edition" onclick="basculerMode();" />
+    <input type="text" class="controle" />
+    <input type="button" value="+" class="controle" />
+
+    <div id="contenu">
+        <p>Paragraphe 1</p>
+        <p>Paragraphe 2</p>
+        <p>Paragraphe 3 </p>
+    </div>
+
+    <input type="button" value="Passer en mode edition" onclick="basculerMode();">
+    <input type="text" class="controle" />
+    <input type="button" value="+" class="controle" />
+</body>
