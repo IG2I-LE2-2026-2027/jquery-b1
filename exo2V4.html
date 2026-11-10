@@ -1,0 +1,146 @@
+<script src="jquery.js"></script>
+
+<style>
+    .controle {
+        display: none;
+    }
+
+    #contenu p {
+        padding: 2px;
+        white-space: pre-wrap;
+        /*conserve les retours à la ligne dans le textarea*/
+    }
+
+    #contenu p textarea {
+        width: 90%;
+    }
+
+    #contenu.modeEdition p:hover {
+        cursor: pointer;
+        border: 1px solid black;
+    }
+</style>
+
+<script>
+    // Création d'un état
+    var modeEdition = false;
+
+    //Creer un paragraphe
+    function creerParagraphe(texte) {
+        return $("<p>").text(texte);
+    }
+
+    // Textarea d'édition du paragraphe
+    // Il est pré rempli avec l'ancien contenu, lu dans .data("ancien") du paragraphe
+    // Il connait le paragraphe qu'il édite (closure sur Jp): pas besoin de parent()
+    function creerChampEdition(jP) {
+        var jChamp = $("<textarea>")
+            .attr("rows", 3)
+            .val(jP.data("ancien"));
+
+        jChamp.on("keydown", function (contexte) {
+            // entrée valide; Maj+Entrée insère un retour à la ligne dans le textearea
+            if (contexte.which === 13 && !contexte.shiftKey) {
+                contexte.preventDefault(); //empêcher le retour à la ligne dans le textarea
+                validerEdition(jP, jChamp);
+            }
+        });
+        return jChamp;
+    }
+
+    //Creer la barre de controle
+    function creerBarre(position) {
+        var jBascule = $("<input type='button'>")
+            .addClass("basculeMode")
+            .val("Passer en mode edition");
+
+        // var jChamp = $("<input type='text'>")
+        //     .addClass("controle");
+
+        var jPlus = $("<input type='button'>")
+            .addClass("controle")
+            .val("+");
+
+        jBascule.on("click", basculerMode);
+
+        jPlus.on("click", function () {
+            var jP = creerParagraphe("Nouveau paragraphe");
+
+            if (position === "haut")
+                $("#contenu").prepend(jP); // ajouter avant les paragraphes existants
+            else
+                $("#contenu").append(jP); // ajouter après les paragraphes existants
+        });
+
+        return $("<div>").append(jBascule, jPlus);
+    }
+
+    function demarrerEdition(jP) {
+        if (!modeEdition) return; // un clic dans le textarea remonte
+        // jusqu'au <p>: on ne relance pas l'édition
+
+        if ($("textarea", jP).length !== 0) return // recherche dans le context Jp
+
+        jP.data("ancien", jP.text()); // mémorise l'ancien contenu (.data)
+
+        var jChamp = creerChampEdition(jP);
+        jP.empty().append(jChamp);
+        jChamp.trigger("focus");
+    }
+
+    function validerEdition(jP, jChamp) {
+        var texte = jChamp.val().trim();
+        if (texte === "") return;
+        jP.text(texte).removeData("ancien");
+    }
+
+    function annulerEditions() {
+        $("#contenu p").each(function () {
+            var jP = $(this);
+            if (jP.data("ancien") !== undefined) { //Ce paragraphe est en cours d'édition
+                jP.text(jP.data("ancien")).removeData("ancien");
+
+            }
+        });
+    }
+
+    // Mode édition
+    function basculerMode() {
+        modeEdition = !modeEdition;
+
+        if (!modeEdition) annulerEditions(); // on quitte: on abandonne les saisies en cours
+
+        $(".controle").toggle(modeEdition);
+        $("#contenu").toggleClass("modeEdition", modeEdition);
+        $(".basculeMode").val(modeEdition ? "Quitter le mode edition" : "Passer en mode edition");
+    }
+
+    // Assemblage
+    $(function () {  // Attend que le DOM soit prêt
+        var jContenu = $("#contenu"); // Sélectionne un élément par son ID et créé un l'object Jquery jContenu
+
+        jContenu.before($("<div>").addClass("controle").text("Mode Edition"));
+        jContenu.before(creerBarre("haut")); // insère avant un élément
+        jContenu.after(creerBarre("bas")); // insère après un élément
+
+        // Délégation: vaut pour les <p> présents ET pour ceux créés plus tard
+        jContenu.on("click", "p", function () {
+            demarrerEdition($(this));
+        });
+
+        // ESC, où que l'on soit dans la page
+        $(document).on("keyup", function (contexte) {
+            if (contexte.which === 27) {
+                annulerEditions();
+            }
+        });
+    });
+</script>
+
+<body>
+    <div id="contenu">
+        <p>paragraphe 1</p>
+        <p>paragraphe 2</p>
+        <p>paragraphe 3</p>
+    </div>
+</body>
