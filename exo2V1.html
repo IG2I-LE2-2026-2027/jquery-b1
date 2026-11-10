@@ -1,0 +1,29 @@
+<script src="jquery.js"></script>
+
+<style></style>
+
+<script>
+    function basculerMode() {
+        // Afficher/Cacher le #contenu
+        $("#contenu").toggle();
+
+        // mettre à jour la valeur du bouton
+        if ($("input").val() == "Cacher") {
+            $("input").val("Afficher");
+        } else {
+            $("input").val("Cacher");
+        }
+    }
+</script>
+
+<body>
+    <input type="button" value="Cacher" onclick="basculerMode();">
+
+    <div id="contenu">
+        <p>Paragraphe 1</p>
+        <p>Paragraphe 2</p>
+        <p>Paragraphe 3 </p>
+    </div>
+
+    <input type="button" value="Cacher" onclick="basculerMode();">
+</body>
